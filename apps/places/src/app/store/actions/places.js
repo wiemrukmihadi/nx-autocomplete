@@ -16,21 +16,6 @@ export const fetchAddress = (_service, _request, _googleMap) => ({
     googleMap: _googleMap,
   });
 
-// const fetchAPISuccess = (payload) => async (dispatch) => {
-//     dispatch({
-//       FETCH_PLACES_SUCCESS,
-//       payload,
-//     })
-//   }
-//   const fetchAPIError = (payload) => async (dispatch) => {
-//     dispatch({
-//       FETCH_PLACES_ERROR,
-      
-//     })
-//   }
-const fetchAPISuccess = payload => ({ type: FETCH_PLACES_SUCCESS, payload });
-const fetchAPIError = () => ({type: FETCH_PLACES_ERROR});
-
 const getAddress = (_action) =>  { 
   
   return new Promise((_resolve, _reject ) =>  _action.service.findPlaceFromQuery(
