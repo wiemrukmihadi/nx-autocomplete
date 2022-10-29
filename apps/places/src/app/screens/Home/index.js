@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import debounce from 'lodash';
 import Gmap from "../../components/Gmap";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAPIError, fetchAPIStart, fetchAPISuccess } from "../../store/actions/places";
+import { fetchAddress } from "../../store/actions/places";
 import PlaceSelector from '../../store/selectors/places'
 import { Autocomplete, TextField } from "@mui/material";
+import { FETCH_PLACES_ERROR, FETCH_PLACES_SUCCESS } from "../../store/actionTypes";
 
 let searchDebounce;
 
@@ -12,43 +13,18 @@ const Home = () => {
     const [map, setMap] = useState();
     const [googleMap, setGoogleMap] = useState();
     const places = useSelector(PlaceSelector);
-    
+    // let service;
     const dispatch = useDispatch();
     const addressMapSearch = async (query) => {
-        dispatch(fetchAPIStart());
+      
         const request = {
           query,
           fields: ['name', 'geometry', 'formatted_address'],
         };
     
         const service = new googleMap.places.PlacesService(map);
-    
-        try {
-          await service.findPlaceFromQuery(
-            request,
-            (
-              results,
-              status,
-            ) => {
-              if (status === googleMap.places.PlacesServiceStatus.OK && results) {
-                const prediction = results?.map(
-                  (predictionItem) => ({
-                    location: predictionItem.geometry.location,
-                    formatted_address: predictionItem.formatted_address,
-                    name: predictionItem.name,
-                  }),
-                );
-                dispatch(fetchAPISuccess(prediction));
-              } else {
-                dispatch(fetchAPIError());
-              }
-            },
-          );
-        } catch (error) {
-            dispatch(fetchAPIError());
-        }
-    
-      };
+        dispatch(fetchAddress(service, request, googleMap));    
+    };
     
     
     useEffect(() => {
@@ -73,14 +49,14 @@ const Home = () => {
                 )}
                 sx={{ width: '500px' }}
                 onInputChange={(event, value) => {
+                  // if( value !==  ''){
                     console.log('__text', value);
                     clearTimeout(searchDebounce);
                     searchDebounce = setTimeout(() => {
                     addressMapSearch(value);
                     }, 700);
-                }}
-                onChange={(event, value) => {
-                    console.log('__text', value);
+                  // }
+                   
                 }}
                 />
             </div>

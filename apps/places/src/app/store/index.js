@@ -8,8 +8,22 @@ import {
   /* reducers */
   /* please import in alphabetical order */
   import places from './reducers/places';
+import { combineEpics, createEpicMiddleware } from 'redux-observable';
+import promise from 'redux-promise-middleware';
+import { catchError } from 'rxjs';
+import { fetchAddressEpic } from './actions/places';
+
+const epicMiddleware = createEpicMiddleware();
   
-  const middleware = [thunk];
+  // const middleware = [thunk];
+  const middleware = [
+    epicMiddleware,
+    thunk,
+  ]
+
+  const rootEpic = combineEpics(
+    fetchAddressEpic
+  );
   
   
   const composeEnhancers = typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -41,5 +55,6 @@ import {
   const persistedReducer = persistReducer(persistConfig, rootReducer);
   
   export const store = createStore(persistedReducer, enhancer);
+  epicMiddleware.run(rootEpic);
   export const persistor = persistStore(store);
   
